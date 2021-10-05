@@ -18,10 +18,11 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
+  Dimensions,
 } from 'react-native';
 import {evaluate} from 'mathjs';
 import Button from './components/common/Button';
-import {buttons} from './constants/buttons';
+import {buttons, extendedButtons} from './constants/buttons';
 import Icon from 'react-native-vector-icons/Entypo';
 import {ErrorModal} from './components/common/ErrorModal';
 
@@ -31,10 +32,21 @@ const App = () => {
   const [isReady, setIsReady] = React.useState(true);
   const [modalVisible, setModalVisible] = React.useState(false);
   const [currentNumber, setCurrentNumber] = React.useState('');
+  const [isLandscape, setIsLandscape] = React.useState(false);
 
   React.useEffect(() => {
     evaluate('1+1');
+    setIsLandscape(isPortrait() ? false : true);
   }, []);
+
+  const isPortrait = () => {
+    const dim = Dimensions.get('screen');
+    return dim.height >= dim.width;
+  };
+
+  Dimensions.addEventListener('change', () => {
+    setIsLandscape(isPortrait() ? false : true);
+  });
 
   const styles = StyleSheet.create({
     results: {
@@ -58,6 +70,7 @@ const App = () => {
     },
     themeButton: {
       alignSelf: 'flex-start',
+      position: 'absolute',
       bottom: '5%',
       margin: 15,
       backgroundColor: isDarkMode ? '#7b8084' : '#e5e5e5',
@@ -73,19 +86,12 @@ const App = () => {
       flexDirection: 'row',
       flexWrap: 'wrap',
     },
-    button: {
-      borderColor: isDarkMode ? '#3f4d5b' : '#e5e5e5',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minWidth: '24%',
-      minHeight: '54%',
-      flex: 2,
-    },
     textButton: {
       color: isDarkMode ? '#b5b7bb' : '#7c7c7c',
       fontSize: 28,
     },
   });
+
   return (
     <View>
       <StatusBar barStyle={'dark-content'} animated backgroundColor="white" />
@@ -105,7 +111,7 @@ const App = () => {
         <Text style={styles.resultText}>{currentNumber}</Text>
       </View>
       <View style={styles.buttons}>
-        {buttons.map(button => (
+        {(isLandscape ? extendedButtons : buttons).map(button => (
           <Button
             key={`${button.type}-${button.value}`}
             buttonInfo={{
@@ -114,15 +120,20 @@ const App = () => {
                 if (isReady) {
                   setCurrentNumber(button.onClick(currentNumber));
                 } else {
-                  setLastNumber(currentNumber);
-                  setCurrentNumber(button.onClick(''));
+                  if (button.type === 'operation') {
+                    setCurrentNumber(button.onClick(currentNumber));
+                  } else {
+                    setLastNumber(currentNumber);
+                    setCurrentNumber(button.onClick(''));
+                  }
                   setIsReady(true);
                 }
               },
               big: button.big,
               value: button.value,
             }}
-            isDarkMode={isDarkMode}>
+            isDarkMode={isDarkMode}
+            small={isLandscape}>
             {button.value}
           </Button>
         ))}
@@ -142,6 +153,7 @@ const App = () => {
             value: '=',
           }}
           isDarkMode={isDarkMode}
+          small={isLandscape}
           children={'='}
         />
       </View>

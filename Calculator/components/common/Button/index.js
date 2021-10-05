@@ -7,10 +7,11 @@ type Props = {
   buttonInfo: button,
   children: React.Node,
   isDarkMode: boolean,
+  small: boolean,
 };
 
 const Button = (props: Props) => {
-  const {buttonInfo, children, isDarkMode} = props;
+  const {buttonInfo, children, isDarkMode, small = false} = props;
   let style = {};
   let childStyle = {};
   const styles = StyleSheet.create({
@@ -18,7 +19,7 @@ const Button = (props: Props) => {
       borderColor: isDarkMode ? '#3f4d5b' : '#e5e5e5',
       alignItems: 'center',
       justifyContent: 'center',
-      minWidth: '24%',
+      minWidth: small ? '14.28%' : '24%',
       minHeight: '54%',
       flex: 2,
     },
@@ -32,12 +33,34 @@ const Button = (props: Props) => {
     style = [
       styles.button,
       {
-        backgroundColor: ['C', 'DEL', '.'].includes(buttonInfo.value)
+        backgroundColor: [
+          'C',
+          'DEL',
+          '.',
+          'π',
+          'e',
+          '(',
+          ')',
+          'sin',
+          'sinh',
+          'tg',
+          'cos',
+          'cosh',
+          'ctg',
+          '!',
+          '^',
+          '%',
+          'deg',
+          'sin',
+          'sqrt',
+          'sin',
+          'log',
+        ].includes(buttonInfo.value)
           ? isDarkMode
             ? '#414853'
             : '#ededed'
           : '#FF6666',
-        minWidth: buttonInfo.big ? '37.5%' : '25%',
+        minWidth: small ? '14.28%' : buttonInfo.big ? '37.5%' : '25%',
       },
     ];
     childStyle = [
@@ -50,7 +73,7 @@ const Button = (props: Props) => {
       styles.button,
       {
         backgroundColor: isDarkMode ? '#303946' : '#fff',
-        minWidth: buttonInfo.big ? '37.5%' : '25%',
+        minWidth: small ? '14.28%' : buttonInfo.big ? '37.5%' : '25%',
       },
     ];
     childStyle = styles.textButton;
